@@ -5,18 +5,18 @@ provider "google" {
 }
 
 resource "google_compute_network" "vpc_network" {
-  name = "my-vpc-network"
+  name = "demo-vpc-network"
 }
 
 resource "google_compute_subnetwork" "public_subnet" {
-  name          = "public-subnet"
+  name          = "demo-public-subnet"
   ip_cidr_range = "10.0.1.0/24"
   network       = google_compute_network.vpc_network.name
   region        = "us-central1"
 }
 
 resource "google_compute_firewall" "allow_ssh" {
-  name    = "allow-ssh"
+  name    = "allow-ssh-demo"
   network = google_compute_network.vpc_network.name
 
   allow {
@@ -28,7 +28,7 @@ resource "google_compute_firewall" "allow_ssh" {
 }
 
 resource "google_compute_firewall" "allow_http" {
-  name    = "allow-http"
+  name    = "allow-http-demo"
   network = google_compute_network.vpc_network.name
 
   allow {
@@ -39,8 +39,8 @@ resource "google_compute_firewall" "allow_http" {
   source_ranges = ["0.0.0.0/0"]
 }
 
-resource "google_compute_instance" "public_vm" {
-  name         = "public-vm"
+resource "google_compute_instance" "jenkins-vm" {
+  name         = "jenkins-vm"
   machine_type = "n1-standard-2"
   zone         = "us-central1-a"
 
@@ -75,7 +75,7 @@ resource "google_compute_instance" "public_vm" {
 }
 
 resource "google_compute_route" "public_subnet_route" {
-  name        = "public-subnet-route"
+  name        = "public-subnet-route-demo"
   dest_range  = "0.0.0.0/0"
   network     = google_compute_network.vpc_network.name
   next_hop_gateway = google_compute_instance.public_vm.network_interface[0].network_ip
